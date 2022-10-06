@@ -2,11 +2,12 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
+const { Server } = require("socket.io");
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
+const io = new Server(server);
 
-server.listen(3100, () => {
-    console.log('listening on *:3100');
+app.use(express.static(__dirname + '/public'));
+
+server.listen(5000, () => {
+    console.log('listening on *:5000');
 });
