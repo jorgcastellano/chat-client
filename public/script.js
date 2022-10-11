@@ -27,6 +27,22 @@ fetch(`${baseUrl}/room/initiate`, {
     .then((data) => {
         console.log(data);
         roomId = data.chatRoom.chatRoomId;
+
+        fetch(`${baseUrl}/room/${roomId}`, {
+            headers: { "Content-type": "application/json; charset=UTF-8", 'Authorization': 'Bearer ' + token }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                data.conversation.forEach(function (msg) {
+                    var item = document.createElement('li');
+                    item.textContent = msg.message.messageText;
+                    messages.appendChild(item);
+                    window.scrollTo(0, document.body.scrollHeight);
+                });
+            })
+            .catch(err => console.log(err));
+
     })
     .catch(err => console.log(err));
 
