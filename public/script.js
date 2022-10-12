@@ -3,52 +3,64 @@ const baseUrl = "https://chat-dev.digilabel.app";
 const userId1 = '8cea7f38b53047dc93fff627b59d95c0';
 const userId2 = '212dbf1049f248aabd00cd3c934b327f';
 var roomId = '';
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMTJkYmYxMDQ5ZjI0OGFhYmQwMGNkM2M5MzRiMzI3ZiIsInVzZXJUeXBlIjoicHJvZmVzc2lvbmFsIiwiaWF0IjoxNjY1NDYyMzg3fQ.h8KzuFLCtohY4T2tV8jQKMx-wMbZkfTv9g1t72Rgjj4';
-
+var token = '';
 var socket = io(baseUrl);
-
 let email = prompt("Ingrese su correo", "");
 
 console.log(email);
-if ( email != '') {
+if (email != '') {
 
     socket.on("connect", () => {
         console.log(`Connected to: ${socket.id}`);
     });
 
-    let _datos = {
-        userIds: [userId1, userId2],
-        type: "consumer-to-professional"
-    }
-
-    var form = document.getElementById('form');
-    var input = document.getElementById('input');
-
-    fetch(`${baseUrl}/room/initiate`, {
+    fetch(`${baseUrl}/login/${email}`, {
         method: "POST",
-        body: JSON.stringify(_datos),
-        headers: { "Content-type": "application/json; charset=UTF-8", 'Authorization': 'Bearer ' + token }
+        headers: { "Content-type": "application/json; charset=UTF-8" }
     })
-        .then(response => response.json())
+        .then(r => r.json().then(data => ({
+            status: r.status, body: data
+        })))
         .then((data) => {
-            console.log(data);
-            roomId = data.chatRoom.chatRoomId;
+            if (data.status == 200) {
+                token = data.body.authorization;
 
-            fetch(`${baseUrl}/room/${roomId}`, {
-                headers: { "Content-type": "application/json; charset=UTF-8", 'Authorization': 'Bearer ' + token }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data)
-                    data.conversation.forEach(function (msg) {
-                        var item = document.createElement('li');
-                        item.textContent = msg.message.messageText;
-                        messages.appendChild(item);
-                        window.scrollTo(0, document.body.scrollHeight);
-                    });
+                let _datos = {
+                    userIds: [userId1, userId2],
+                    type: "consumer-to-professional"
+                }
+
+                var form = document.getElementById('form');
+                var input = document.getElementById('input');
+
+                fetch(`${baseUrl}/room/initiate`, {
+                    method: "POST",
+                    body: JSON.stringify(_datos),
+                    headers: { "Content-type": "application/json; charset=UTF-8", 'Authorization': 'Bearer ' + token }
                 })
-                .catch(err => console.log(err));
+                    .then(response => response.json())
+                    .then((data) => {
+                        console.log(data);
+                        roomId = data.chatRoom.chatRoomId;
 
+                        fetch(`${baseUrl}/room/${roomId}`, {
+                            headers: { "Content-type": "application/json; charset=UTF-8", 'Authorization': 'Bearer ' + token }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data)
+                                data.conversation.forEach(function (msg) {
+                                    var item = document.createElement('li');
+                                    item.textContent = msg.message.messageText;
+                                    messages.appendChild(item);
+                                    window.scrollTo(0, document.body.scrollHeight);
+                                });
+                            })
+                            .catch(err => console.log(err));
+
+                    })
+                    .catch(err => console.log(err));
+            }
         })
         .catch(err => console.log(err));
 
