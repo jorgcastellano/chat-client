@@ -1,7 +1,5 @@
-const baseUrl = "http://localhost:3000";
-// const baseUrl = "https://chat-dev.digilabel.app";
-const userId1 = '8cea7f38b53047dc93fff627b59d95c0';
-const userId2 = '212dbf1049f248aabd00cd3c934b327f';
+//const baseUrl = "http://localhost:3000";
+const baseUrl = "https://chat-dev.digilabel.app";
 var roomId = '';
 var token = '';
 var socket = io(baseUrl);
@@ -24,9 +22,10 @@ if (email != '') {
         .then((data) => {
             if (data.status == 200) {
                 token = data.body.authorization;
-
+                let email2 = prompt("Correo para hablar", "");
+                console.log(email2);
                 let _datos = {
-                    userIds: [userId1, userId2],
+                    userIds: [email, email2],
                     type: "consumer-to-professional"
                 }
 
