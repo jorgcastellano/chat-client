@@ -1,5 +1,5 @@
-// const baseUrl = "http://localhost:3000";
-const baseUrl = "https://chat-dev.digilabel.app";
+const baseUrl = "http://localhost:3000";
+// const baseUrl = "https://chat-dev.digilabel.app";
 const userId1 = '8cea7f38b53047dc93fff627b59d95c0';
 const userId2 = '212dbf1049f248aabd00cd3c934b327f';
 var roomId = '';
@@ -43,6 +43,9 @@ if (email != '') {
                         console.log(data);
                         roomId = data.chatRoom.chatRoomId;
 
+                        socket.emit("identity", email);
+                        socket.emit("subscribe", roomId, email);
+
                         fetch(`${baseUrl}/room/${roomId}`, {
                             headers: { "Content-type": "application/json; charset=UTF-8", 'Authorization': 'Bearer ' + token }
                         })
@@ -63,9 +66,6 @@ if (email != '') {
             }
         })
         .catch(err => console.log(err));
-
-    // socket.emit("identity", userId);
-    // socket.emit("subscribe", roomId, userId);
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
